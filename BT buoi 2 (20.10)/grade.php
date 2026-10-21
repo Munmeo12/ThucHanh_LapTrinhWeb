@@ -1,5 +1,5 @@
 <?php
-// 1. Hàm kiểm tra điểm có hợp lệ hay không (là số và từ 0 đến 10)
+// 1. Hàm kiểm tra điểm hợp lệ (0 - 10)
 function isValidScore($score): bool {
     return is_numeric($score) && $score >= 0 && $score <= 10;
 }
@@ -9,7 +9,7 @@ function finalScore(float $cc, float $mid, float $final): float {
     return $cc * 0.10 + $mid * 0.30 + $final * 0.60;
 }
 
-// 3. Hàm xếp loại học lực dựa trên điểm tổng kết
+// 3. Hàm xếp loại
 function getGradeCategory(float $score): string {
     if ($score >= 8.0) return "<span style='color: #28a745; font-weight: bold;'>Giỏi</span>";
     if ($score >= 6.5) return "<span style='color: #007bff; font-weight: bold;'>Khá</span>";
@@ -17,37 +17,30 @@ function getGradeCategory(float $score): string {
     return "<span style='color: #dc3545; font-weight: bold;'>Chưa đạt</span>";
 }
 
-// Giữ lại dữ liệu người dùng đã nhập
-$name = $_POST['name'] ?? '';
-$cc = $_POST['cc'] ?? '';
-$mid = $_POST['mid'] ?? '';
+$name  = $_POST['name'] ?? '';
+$cc    = $_POST['cc'] ?? '';
+$mid   = $_POST['mid'] ?? '';
 $final = $_POST['final'] ?? '';
 
 $errors = [];
 $resultHtml = "";
 
-// Xử lý khi gửi Form bằng phương thức POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($name);
 
-    // Kiểm tra các trường dữ liệu
     if (empty($name)) {
         $errors[] = "Vui lòng nhập Họ và Tên sinh viên.";
     }
-
     if ($cc === '' || !isValidScore($cc)) {
         $errors[] = "Điểm chuyên cần không hợp lệ (Phải là số từ 0 đến 10).";
     }
-
     if ($mid === '' || !isValidScore($mid)) {
         $errors[] = "Điểm giữa kỳ không hợp lệ (Phải là số từ 0 đến 10).";
     }
-
     if ($final === '' || !isValidScore($final)) {
         $errors[] = "Điểm cuối kỳ không hợp lệ (Phải là số từ 0 đến 10).";
     }
 
-    // Nếu không có lỗi -> Tiến hành tính toán
     if (empty($errors)) {
         $total = finalScore((float)$cc, (float)$mid, (float)$final);
         $totalFormatted = number_format($total, 1);
@@ -94,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <div class="card">
     <h2>Máy Tính Điểm Học Phần</h2>
 
-    <!-- Hiển thị hộp thông báo lỗi nếu người dùng nhập sai -->
     <?php if (!empty($errors)): ?>
         <div class="error-box">
             <strong>Có lỗi xảy ra:</strong>
@@ -109,7 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <form action="" method="POST">
         <div class="form-group">
             <label>Họ và Tên Sinh Viên:</label>
-            <!-- Giữ lại dữ liệu đã nhập -->
             <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" placeholder="Ví dụ: Trần Thị Hà Anh">
         </div>
 
@@ -131,7 +122,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="submit">Tính Điểm & Xếp Loại</button>
     </form>
 
-    <!-- Hiển thị kết quả tính toán -->
     <?= $resultHtml ?>
 </div>
 
